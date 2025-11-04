@@ -17,6 +17,14 @@ router.post(
     }
 )
 
+router.post(
+    "/create-doctor",
+    fileUploder.upload.single('file'),
+    (req: Request, res: Response, next: NextFunction) => {
+        req.body = UserValidation.createDoctorValidationSchema.parse(JSON.parse(req.body.data));
+        return UserController.createDoctor(req, res, next)
+    }
+
+)
 
 export const userRoutes = router;
- 
