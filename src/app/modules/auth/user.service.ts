@@ -1,4 +1,6 @@
+import config from "../../../config";
 import { UserStatus } from "../../../generated/enums"
+import { jwtHelperes } from "../../helper/jwtHelper";
 import { prisma } from "../../shared/prisma"
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
@@ -20,19 +22,14 @@ const login = async( payload: {email: string, password: string} ) => {
         throw new Error("Password not matched")
     }
 
-    const accessToken = jwt.sign({email: user.email, role: user.role}, 'jwt-secret-key', {
-        algorithm: "HS256",
-        expiresIn: "1h"
-    })
+    const accessToken = jwtHelperes.generateToken({email: user.email, role: user.role}, config.access_token_secret as string, "1h")
 
-    const refreshToken = jwt.sign({email: user.email, role: user.role}, 'jwt-secret-key', {
-        algorithm: "HS256",
-        expiresIn: "1h"
-    })
+    const refreshToken = jwtHelperes.generateToken({email: user.email, role: user.role}, config.refresh_token_secret as string, "90d")
 
     return {
         accessToken,
-        refreshToken
+        refreshToken,
+        needPasswordChange: user.needPasswordChange
     }
 }
 
