@@ -4,6 +4,7 @@ import { prisma } from "../../shared/prisma";
 import { fileUploder } from "../../helper/fileUploder";
 import { UserRole } from "../../../generated/enums";
 import { Admin, Doctor } from "../../../generated/client";
+import { number } from "zod";
 
 
 
@@ -95,8 +96,14 @@ const createAdmin = async (req: Request): Promise<Admin> => {
 };
 
 
-const getAllFromDB = async () => {
-    const result = await prisma.user.findMany()
+const getAllFromDB = async ({page, limit} : {page: number, limit: number}) => {
+
+    const skip = (page - 1) * limit;
+
+    const result = await prisma.user.findMany({
+        skip,
+        take: limit
+    })
     return result
 }
 
