@@ -4,7 +4,7 @@ import { prisma } from "../../shared/prisma";
 import { fileUploder } from "../../helper/fileUploder";
 import { UserRole } from "../../../generated/enums";
 import { Admin, Doctor } from "../../../generated/client";
-import { number } from "zod";
+
 
 
 
@@ -96,7 +96,11 @@ const createAdmin = async (req: Request): Promise<Admin> => {
 };
 
 
-const getAllFromDB = async ({page, limit, searchTerm, sortBy, sortOrder} : {page: number, limit: number, searchTerm?: any, sortBy?: any, sortOrder?: any}) => {
+const getAllFromDB = async (
+    {page, limit, searchTerm, sortBy, sortOrder, role, status} : 
+    {page: number, limit: number, searchTerm?: any, sortBy?: any, sortOrder?: any, role: any, status: any}
+) => {
+
     const pageNumber = page || 1;
     const limitNumber = limit || 10;
     const skip = (pageNumber - 1) * limitNumber;
@@ -108,7 +112,9 @@ const getAllFromDB = async ({page, limit, searchTerm, sortBy, sortOrder} : {page
             email: {
                 contains: searchTerm,
                 mode: "insensitive"
-            }
+            },
+            role: role,
+            status: status
         },
 
         orderBy: sortBy && sortOrder ? {

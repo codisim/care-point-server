@@ -1,6 +1,7 @@
+import pick from "../../shared/pick";
 import { Request, Response } from "express";
-import catchAsync from "../../shared/catchAsync";
 import { UserService } from "./user.service";
+import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 
 
@@ -42,8 +43,13 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
 
 
 const getAllFromDB = catchAsync(async(req: Request, res: Response) => {
-    const { page, limit, searchTerm, sortBy, sortOrder } = req.query;
-    const result = await UserService.getAllFromDB({page: Number(page), limit: Number(limit), searchTerm, sortBy, sortOrder});
+    
+    console.log("options", req.query)
+    const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"])
+
+
+    const { page, limit, searchTerm, sortBy, sortOrder, role, status } = req.query;
+    const result = await UserService.getAllFromDB({page: Number(page), limit: Number(limit), searchTerm, sortBy, sortOrder, role, status});
 
     sendResponse(res, {
         statusCode: 200,
