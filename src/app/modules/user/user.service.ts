@@ -3,7 +3,9 @@ import { Request } from "express";
 import { prisma } from "../../shared/prisma";
 import { fileUploder } from "../../helper/fileUploder";
 import { UserRole } from "../../../generated/enums";
-import { Admin, Doctor } from "../../../generated/client";
+import { Admin, Doctor, Prisma } from "../../../generated/client";
+import { paginationHelper } from "../../shared/pagination";
+import {  userSearchableFields } from "./user.contant";
 
 
 
@@ -42,7 +44,7 @@ const createDoctor = async (req: Request): Promise<Doctor> => {
     }
 
     const hashedPass = await bcrypt.hash(req.body.password, 10)
-     const userData = {
+    const userData = {
         email: req.body.doctor.email,
         password: hashedPass,
         role: UserRole.DOCTOR
@@ -98,29 +100,47 @@ const createAdmin = async (req: Request): Promise<Admin> => {
 
 const getAllFromDB = async (params: any, options: any) => {
 
-    const pageNumber = options.page || 1;
-    const limitNumber = options.limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { page, limit, skip, sortBy, sortOrder } = paginationHelper.pagination(options);
+    const { searchTerm, ...filterData } = params;
+
+    const andConditions: Prisma.UserWhereInput[] = []
+
+    if (searchTerm) {
+        andConditions.push({
+            OR: userSearchableFields.map(field => ({
+                [field]: {
+                    contains: searchTerm,
+                    mode: "insensitive"
+                },
+            }))
+        })
+    }
+
+    if(Object.keys(filterData).length > 0) {
+        andConditions.push({
+            AND: Object.keys(filterData).map(key => ({
+                [key]: {
+                    equals: (filterData as any)[key]
+                }
+            }))
+        })
+    }
+
     const result = await prisma.user.findMany({
         skip,
-        take: limitNumber,
+        take: Number(limit),
 
         where: {
-            email: {
-                contains: searchTerm,
-                mode: "insensitive"
-            },
-            role: role,
-            status: status
+            AND: andConditions
         },
 
-        orderBy: sortBy && sortOrder ? {
+        orderBy: {
             [sortBy]: sortOrder
-        } : {
-            createdAt: "desc"
         }
-
     })
+
+    
+
     return result
 }
 

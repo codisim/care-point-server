@@ -44,7 +44,7 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
 
 const getAllFromDB = catchAsync(async(req: Request, res: Response) => {
     
-    const filters = pick(req.query, ["status", "role", "email"])
+    const filters = pick(req.query, ["status", "role", "email", "SearchTerm"])
     const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"])
 
 
