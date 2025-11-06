@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { UserService } from "./user.service";
 import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
+import { userFiltersableFields } from "./user.contant";
 
 
 const createPatient = catchAsync(async (req: Request, res: Response) => {
@@ -44,7 +45,7 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
 
 const getAllFromDB = catchAsync(async(req: Request, res: Response) => {
     
-    const filters = pick(req.query, ["status", "role", "email", "SearchTerm"])
+    const filters = pick(req.query, userFiltersableFields)
     const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"])
 
 
@@ -54,7 +55,8 @@ const getAllFromDB = catchAsync(async(req: Request, res: Response) => {
         statusCode: 200,
         success: true,
         message: "Users retrive successfully..!",
-        data: result
+        meta: result.meta,
+        data: result.data
     })
 })
 

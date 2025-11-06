@@ -141,7 +141,7 @@ const getAllFromDB = async (params: any, options: any) => {
         }
     })
 
-    const total = prisma.user.count({
+    const total = await prisma.user.count({
         where: whereConditions,
 
     })
