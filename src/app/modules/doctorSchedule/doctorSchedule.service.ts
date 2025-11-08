@@ -1,6 +1,7 @@
 import { prisma } from "../../shared/prisma";
+import { IJWTPayload } from "../../types/common";
 
-const insertIntoDB = async (user: any, payload: {scheduleIds: string[]}) => {
+const insertIntoDB = async (user: IJWTPayload, payload: {scheduleIds: string[]}) => {
     
     const doctorInfo = await prisma.doctor.findFirstOrThrow({
         where: {
