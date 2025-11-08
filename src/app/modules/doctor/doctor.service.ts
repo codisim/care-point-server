@@ -1,5 +1,5 @@
 import { prisma } from "../../shared/prisma";
-import { Doctor, Prisma } from "../../../generated/client";
+import { Prisma } from "../../../generated/client";
 import { paginationHelper } from "../../shared/pagination";
 import { doctorSearchableFields } from "./doctor.constant";
 import { IDoctorUpdateInput } from "./doctor.interface";
@@ -19,6 +19,22 @@ const getAllDoctorFromDB = async (filters: any, options: any) => {
                     mode: "insensitive"
                 }
             }))
+        })
+    }
+
+
+    if (specialties && specialties.length > 0) {
+        andConditions.push({
+            doctorSpecialties: {
+                some: {
+                    specialities: {
+                        title: {
+                            contains: specialties,
+                            mode: "insensitive"
+                        }
+                    }
+                }
+            }
         })
     }
 
@@ -42,6 +58,13 @@ const getAllDoctorFromDB = async (filters: any, options: any) => {
         take: limit,
         orderBy: {
             [sortBy]: sortOrder
+        },
+        include: {
+            doctorSpecialties: {
+                include: {
+                    specialities: true
+                }
+            }
         }
     })
 
@@ -86,7 +109,6 @@ const updateDoctorProfile = async (id: string, payload: Partial<IDoctorUpdateInp
                     }
                 })
             }
-
 
             // all added specialties
             const createSpecialtyIds = specialties.filter((specialty) => !specialty.isDeleted);
