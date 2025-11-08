@@ -71,55 +71,57 @@ const updateDoctorProfile = async (id: string, payload: Partial<IDoctorUpdateInp
 
     const { specialties, ...doctorData } = payload;
 
-    if (specialties && specialties.length > 0) {
+    return await prisma.$transaction(async (tnx) => {
+        if (specialties && specialties.length > 0) {
 
-        // all deleted specialties
-        const deleteSpecialtyIds = specialties.filter((specialty) => specialty.isDeleted);
+            // all deleted specialties
+            const deleteSpecialtyIds = specialties.filter((specialty) => specialty.isDeleted);
 
-        // deleted from existing data
-        for (const specialty of deleteSpecialtyIds) {
-            await prisma.doctorSpecialties.deleteMany({
-                where: {
-                    doctorId: id,
-                    specialitiesId: specialty.specialtyId
-                }
-            })
+            // deleted from existing data
+            for (const specialty of deleteSpecialtyIds) {
+                await tnx.doctorSpecialties.deleteMany({
+                    where: {
+                        doctorId: id,
+                        specialitiesId: specialty.specialtyId
+                    }
+                })
+            }
+
+
+            // all added specialties
+            const createSpecialtyIds = specialties.filter((specialty) => !specialty.isDeleted);
+
+            // added into existing data
+            for (const specialty of createSpecialtyIds) {
+                await tnx.doctorSpecialties.create({
+                    data: {
+                        doctorId: id,
+                        specialitiesId: specialty.specialtyId
+                    }
+                })
+            }
+
         }
 
+        // update doctor info --> doctor -> doctorSpecialties -> specialities
+        const updatedData = await tnx.doctor.update({
+            where: {
+                id: doctorInfo.id
+            },
+            data: doctorData,
 
-        // all added specialties
-        const createSpecialtyIds = specialties.filter((specialty) => !specialty.isDeleted);
-
-        // added into existing data
-        for (const specialty of createSpecialtyIds) {
-            await prisma.doctorSpecialties.create({
-                data: {
-                    doctorId: id,
-                    specialitiesId: specialty.specialtyId
-                }
-            })
-        }
-
-    }
-
-    // update doctor info --> doctor -> doctorSpecialties -> specialities
-    const updatedData = await prisma.doctor.update({
-        where: {
-            id: doctorInfo.id
-        },
-        data: doctorData,
-
-        // include inner data
-        include: {
-            doctorSpecialties: {
-                include: {
-                    specialities: true
+            // include inner data
+            include: {
+                doctorSpecialties: {
+                    include: {
+                        specialities: true
+                    }
                 }
             }
-        }
-    })
+        })
 
-    return updatedData
+        return updatedData
+    })
 }
 
 export const DoctorServices = {
