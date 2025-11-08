@@ -25,7 +25,6 @@ router.post(
 );
 
 
-
 router.delete(
     '/:id',
     auth(UserRole.ADMIN, UserRole.ADMIN),
