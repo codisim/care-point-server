@@ -1,42 +1,49 @@
-
-
 model Appoinment {
-  id             String            @id @default(uuid())
+  id             String           @id @default(uuid())
   patientId      String
+  patient        Patient          @relation(fields: [patientId], references: [id])
   doctorId       String
+  doctor         Doctor           @relation(fields: [doctorId], references: [id])
   scheduleId     String
+  schedule       Schedule         @relation(fields: [scheduleId], references: [id])
   videoCallingId String
   status         AppoinmentStatus
   paymentStatus  PaymentStatus
-  createAt       DateTime          @default(now())
-  updateAt       DateTime          @updatedAt
+  createAt       DateTime         @default(now())
+  updateAt       DateTime         @updatedAt
+
+  payment      Payment?
+  prescription Prescription?
 
   @@map("appoinments")
 }
 
-
 model Payment {
-  id                 String         @id @default(uuid())
-  appoinmentId       String
+  id                 String        @id @default(uuid())
+  appoinmentId       String        @unique
+  appoinment         Appoinment    @relation(fields: [appoinmentId], references: [id])
   amount             Float
   transactionId      String
   status             PaymentStatus
   paymentGateWayData Json?
-  createAt           DateTime       @default(now())
-  updateAt           DateTime       @updatedAt
+  createAt           DateTime      @default(now())
+  updateAt           DateTime      @updatedAt
 
   @@map("payments")
 }
 
 model Prescription {
-  id           String    @id @default(uuid())
-  appoinmentId String
+  id           String     @id @default(uuid())
+  appoinmentId String     @unique
+  appoinment   Appoinment @relation(fields: [appoinmentId], references: [id])
   doctorId     String
+  doctor       Doctor     @relation(fields: [doctorId], references: [id])
+  patientId    String
+  patient      Patient    @relation(fields: [patientId], references: [id])
   instructions String
   followUpDate DateTime
-  patientId    String
-  createAt     DateTime  @default(now())
-  updateAt     DateTime  @updatedAt
+  createAt     DateTime   @default(now())
+  updateAt     DateTime   @updatedAt
 
   @@map("prescription")
 }

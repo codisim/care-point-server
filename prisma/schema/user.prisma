@@ -29,9 +29,9 @@ model Admin {
 }
 
 model Doctor {
-  id                  String            @id @default(uuid())
+  id                  String   @id @default(uuid())
   name                String
-  email               String            @unique
+  email               String   @unique
   profilePhoto        String?
   contactNumber       String?
   address             String?
@@ -42,29 +42,31 @@ model Doctor {
   qualification       String
   currentWorkingPlace String
   designation         String
-  isDeleted           Boolean           @default(false)
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
-  user                User              @relation(fields: [email], references: [email])
+  isDeleted           Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [email], references: [email])
 
-  doctorSchedules     DoctorSchedules[]
-  doctorSpecialties   DoctorSpecialties[]
+  doctorSchedules   DoctorSchedules[]
+  doctorSpecialties DoctorSpecialties[]
+  appoinments       Appoinment[]
+  prescriptions     Prescription[]
 
   @@map("doctors")
 }
 
 model Patient {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  profilePhoto String?
-  address      String?
-  isDeleted    Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [email], references: [email])
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  profilePhoto  String?
+  address       String?
+  isDeleted     Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User           @relation(fields: [email], references: [email])
+  appoinments   Appoinment[]
+  prescriptions Prescription[]
 
   @@map("patients")
 }
-
-
