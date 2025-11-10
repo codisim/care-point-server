@@ -220,6 +220,8 @@ const doctorGetByIdFromDb = async(id: string) => {
             }
         }
     })
+
+    return result  
 }
 
 

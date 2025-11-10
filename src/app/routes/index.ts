@@ -1,12 +1,12 @@
-import express from 'express';
-import {  userRoutes } from '../modules/user/user.routes';
-import { authRoutes } from '../modules/auth/user.routes';
-import { scheduleRoutes } from '../modules/schedule/schedule.routes';
 import { doctorScheduleRoutes } from '../modules/doctorSchedule/doctorSchedule.routes';
 import { SpecialtiesRoutes } from '../modules/specialties/specialties.routes';
-import { doctorRoutes } from '../modules/doctor/doctor.routes';
+import { appoinmentRoutes } from '../modules/appoinment/appoinment.rotes';
+import { scheduleRoutes } from '../modules/schedule/schedule.routes';
 import { patientRoutes } from '../modules/patient/patient.routes';
-
+import { doctorRoutes } from '../modules/doctor/doctor.routes';
+import {  userRoutes } from '../modules/user/user.routes';
+import { authRoutes } from '../modules/auth/user.routes';
+import express from 'express';
 
 const router = express.Router();
 
@@ -38,6 +38,10 @@ const moduleRoutes = [
     {
         path: '/patient',
         route: patientRoutes
+    },
+    {
+        path: '/appoinment',
+        route: appoinmentRoutes
     },
 ];
 
