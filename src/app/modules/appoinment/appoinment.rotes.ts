@@ -1,5 +1,7 @@
 import express from "express"
-import { AppoinmentControllers } from "./appoinment.controller"
+import auth from "../../middlewares/auth";
+import { UserRole } from "../../../generated/enums";
+import { AppoinmentControllers } from "./appoinment.controller";
 
 const router = express.Router()
 
@@ -7,6 +9,7 @@ const router = express.Router()
 
 router.post(
     "/",
+    auth(UserRole.PATIENT, UserRole.ADMIN, UserRole.DOCTOR),
     AppoinmentControllers.createAppoinment
 )
 
