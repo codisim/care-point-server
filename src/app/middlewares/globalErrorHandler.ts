@@ -1,6 +1,6 @@
-import httpStatus from "http-status"
-import { Prisma } from "../../generated/client";
 import { NextFunction, Request, Response } from "express"
+import { Prisma } from "../../generated/client";
+import httpStatus from "http-status"
 
 const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
 
@@ -27,13 +27,19 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
             error = err.meta,
             statusCode = httpStatus.BAD_REQUEST
         }
+
+        if (err.code == "P2025") {
+            message = "An operation failed because it depends on one or more records that were required but not found.",
+            error = err.meta,
+            statusCode = httpStatus.BAD_REQUEST
+        }
     }
 
-    // else if(err instanceof Prisma.PrismaClientValidationError) {
-    //     message= "Validation Error",
-    //     err= err.message,
-    //      statusCode = httpStatus.BAD_REQUEST
-    // }
+        else if(err instanceof Prisma.PrismaClientValidationError) {
+            message= "Validation Error",
+            err= err.message,
+            statusCode = httpStatus.BAD_REQUEST
+        }
 
     else if(err instanceof Prisma.PrismaClientUnknownRequestError) {
         message= "Unknown Prisma error occured",

@@ -3,12 +3,14 @@ import { IJWTPayload } from "../../types/common"
 import { prisma } from "../../shared/prisma"
 
 const createAppoinment = async(user: IJWTPayload, payload: {doctorId: string, scheduleId: string}) => {
+    console.log(user);
 
     const patientInfo = await prisma.patient.findFirstOrThrow({
         where: {
             email: user.email
         }
     })
+
 
     const doctorInfo = await prisma.doctor.findFirstOrThrow({
         where: {
