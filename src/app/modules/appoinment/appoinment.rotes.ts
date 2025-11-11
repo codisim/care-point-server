@@ -7,6 +7,13 @@ const router = express.Router()
 
 
 
+router.get(
+    "/my-appoinment",
+    auth(UserRole.PATIENT, UserRole.DOCTOR),
+    AppoinmentControllers.getMyAppoinment
+)
+
+
 router.post(
     "/",
     auth(UserRole.PATIENT),

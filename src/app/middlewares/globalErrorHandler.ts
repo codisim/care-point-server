@@ -40,11 +40,11 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
             }
     }
 
-        else if(err instanceof Prisma.PrismaClientValidationError) {
-            message= "Validation Error",
-            err= err.message,
-            statusCode = httpStatus.BAD_REQUEST
-        }
+        // else if(err instanceof Prisma.PrismaClientValidationError) {
+        //     message= "Validation Error",
+        //     err= err.message,
+        //     statusCode = httpStatus.BAD_REQUEST
+        // }
 
     else if(err instanceof Prisma.PrismaClientUnknownRequestError) {
         message= "Unknown Prisma error occured",

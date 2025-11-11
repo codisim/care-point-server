@@ -25,19 +25,27 @@ const handleStripeWebhookEvent = async(event : Stripe.Event) => {
                     id: paymentId
                 },
                 data: {
-                    status: session.payment_status === "paid" ? PaymentStatus.PAID : PaymentStatus.UNPAID
+                    status: session.payment_status === "paid" ? PaymentStatus.PAID : PaymentStatus.UNPAID,
+                    paymentGateWayData: session
                 }
             })
 
             break;
         }
 
-        case "payment_intent.payment_failed": {
-            const intent = event.data.object as any;
-            console.log("Payment failed:", intent.id);
+        // case "payment_intent.payment_failed": {
+        //     const intent = event.data.object as any;
+        //     await prisma.payment.update({
+        //         where:{
+        //             id: paymentId
+        //         },
+        //         data: {
+        //             status: PaymentStatus.UNPAID,
+        //         }
+        //     })
 
-            break;
-        }
+        //     break;
+        // }
 
         default: 
             console.log(`Unhandled event type: ${event.type}` );
