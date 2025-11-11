@@ -56,7 +56,7 @@ const createAppoinment = async(user: IJWTPayload, payload: {doctorId: string, sc
         })
 
 
-        await tnx.payment.create({
+        const paymentData = await tnx.payment.create({
             data: {
                 appoinmentId: appoinmentData.id,
                 amount: doctorInfo.appointmentFee,
@@ -82,16 +82,19 @@ const createAppoinment = async(user: IJWTPayload, payload: {doctorId: string, sc
                     quantity: 1,
                 },
             ],
-            success_url: 'http://localhost:5000/api/v1/success',
+            metadata: {
+                appoinmentId: appoinmentData.id,
+                paymentId: paymentData.id
+            },
+            success_url: 'https://eng-waliullah.vercel.app',
             cancel_url: 'http://localhost:5000/api/v1/cancel',
         });
 
         console.log(session);
 
-
-
-        return appoinmentData
-
+        return {
+            paymentUrl: session.url
+        }
     })
     
 
