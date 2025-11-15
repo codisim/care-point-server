@@ -1,13 +1,12 @@
-import bcrypt from "bcryptjs";
+import { fileUploder } from "../../helper/fileUploder";
 import { Request } from "express";
 import { prisma } from "../../shared/prisma";
-import { fileUploder } from "../../helper/fileUploder";
+import bcrypt from "bcryptjs";
 
-import { paginationHelper } from "../../shared/pagination";
+import { Admin, Doctor, Prisma, UserRole, UserStatus } from "../../../generated/client";
 import {  userSearchableFields } from "./user.contant";
-import { Admin, Doctor, Prisma, UserRole } from "../../../generated/client";
-
-
+import { paginationHelper } from "../../shared/pagination";
+import { IJWTPayload } from "../../types/common";
 
 const createPatient = async (req: Request) => {
 
@@ -155,9 +154,30 @@ const getAllFromDB = async (params: any, options: any) => {
     }
 }
 
+
+const getMyProfile = async(user: IJWTPayload) => {
+
+    const userData = await prisma.user.findUniqueOrThrow({
+        where: {
+            email: user.email,
+                status: UserStatus.ACTIVE
+        },
+        select: {
+            id: true,
+            email: true,
+            needPasswordChange: true,
+            role: true,
+            status: true
+        }
+    })
+
+    return userData
+}   
+
 export const UserService = {
     createPatient,
     createDoctor,
     createAdmin,
-    getAllFromDB
+    getAllFromDB,
+    getMyProfile
 }

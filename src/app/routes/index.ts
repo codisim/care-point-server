@@ -8,6 +8,7 @@ import { reviewRoutes } from '../modules/review/review.routes';
 import {  userRoutes } from '../modules/user/user.routes';
 import { authRoutes } from '../modules/auth/user.routes';
 import express from 'express';
+import { prescriptionRoutes } from '../modules/prescription/prescription.routes';
 
 const router = express.Router();
 
@@ -47,6 +48,10 @@ const moduleRoutes = [
     {
         path: '/review',
         route: reviewRoutes
+    },
+    {
+        path: '/prescription',
+        route: prescriptionRoutes
     },
 ];
 

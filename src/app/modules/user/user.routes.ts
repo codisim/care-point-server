@@ -9,6 +9,13 @@ const router = express.Router()
 
 
 router.get(
+    "/me", 
+    auth(UserRole.ADMIN, UserRole.DOCTOR, UserRole.ADMIN),    
+    UserController.getMyProfile
+)
+
+
+router.get(
     "/", 
     auth(UserRole.ADMIN),    
     UserController.getAllFromDB

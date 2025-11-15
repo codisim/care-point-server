@@ -51,9 +51,9 @@ const patientPrescription = async(user: IJWTPayload, options: any) => {
         },
         skip,
         take: limit,
-        orderBy: {
-            [sortBy]: [sortOrder]
-        },
+        // orderBy: {
+        //     [sortBy]: [sortOrder]
+        // },
         include: {
             doctor: true,
             patient: true,

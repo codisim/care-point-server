@@ -19,5 +19,5 @@ router.post(
 )
 
 
-export const authRoutes = router;
+export const prescriptionRoutes = router;
  
