@@ -22,6 +22,7 @@
     "http-status": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
     "openai": "^6.8.1",
     "prettier": "^3.6.2",
     "stripe": "^19.3.0",

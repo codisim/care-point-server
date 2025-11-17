@@ -201,19 +201,12 @@ const getMyProfile = async(user: IJWTPayload) => {
 
 
 const changeProfileStatus = async(id: string, payload: {status: UserStatus}) => {
-console.log({id}, payload);
-
-
-
-
 
          const userData = await prisma.user.findUniqueOrThrow({
             where: {
                 id
             }
         })
-
-        console.log({userData});
 
         const updatedUserStatus = await prisma.user.update({
             where: {
@@ -222,9 +215,7 @@ console.log({id}, payload);
             data: payload
         })
 
-
     return updatedUserStatus
-
 }
 
 
