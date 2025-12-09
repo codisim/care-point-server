@@ -51,11 +51,11 @@ const refreshToken = async(token: string) => {
         }
     });
 
-    const accessToken = jwtHelperes.generateToken({
+    const accessToken = jwtHelperes.generateToken({ 
         email: userData.email,
         role: userData.role
     },
-    config.jwt_secret as Secret,
+    config.access_token_secret as Secret,
     config.jwt_expire_in as string
 );
 

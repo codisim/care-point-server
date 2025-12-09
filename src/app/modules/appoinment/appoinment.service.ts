@@ -94,8 +94,6 @@ const createAppoinment = async(user: IJWTPayload, payload: {doctorId: string, sc
             cancel_url: 'http://localhost:5000/api/v1/cancel',
         });
 
-        console.log(session);
-
         return {
             paymentUrl: session.url
         }
@@ -141,7 +139,6 @@ const getAllFromDB = async (
         });
     }
 
-    // console.dir(andConditions, { depth: Infinity })
     const whereConditions: Prisma.AppoinmentWhereInput =
         andConditions.length > 0 ? { AND: andConditions } : {};
 

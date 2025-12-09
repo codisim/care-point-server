@@ -1,17 +1,17 @@
 {
   "name": "care-point",
   "version": "1.0.0",
-  "main": "dist/server.js",
+  "main": "server.js",
   "author": "waliullah",
   "license": "MIT",
-  "type": "commonjs",
+  "prisma": {
+  "schema": "schema.prisma"
+},
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
-    "build": "tsc",
+    "build": "pnpm install --force && tsc",
     "start": "node ./dist/server.js",
     "format": "prettier --write .",
-    "prisma:generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts"
   },
   "dependencies": {
     "@prisma/client": "6.19.0",
@@ -27,6 +27,7 @@
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "openai": "^6.8.1",
+    "prettier": "^3.6.2",
     "stripe": "^19.3.0",
     "uuid": "^13.0.0",
     "zod": "^4.1.12"
@@ -38,7 +39,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.5.0",
-    "prettier": "^3.6.2",
     "prisma": "6.19.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.2"

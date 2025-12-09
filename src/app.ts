@@ -21,7 +21,6 @@ app.post(
 cron.schedule('* * * * *', () => {
 
   try {
-  console.log('Node cron callded at:', new Date());
     AppoinmentServices.cancelUnpaidAppoinment();
   } catch (error) {
     console.error(error)

@@ -49,8 +49,6 @@ export const updateIntoDB = async(user: IJWTPayload, payload: any) => {
             }
     });
 
-    console.log({patientInfo}, {patientData});
-
     return await prisma.$transaction(async(tnx) => {
 
         await tnx.patient.update({

@@ -30,7 +30,6 @@ async function bootstrap() {
             console.log('Unhandled Rejection is detected, we are closing our server...');
             if (server) {
                 server.close(() => {
-                    console.log(error);
                     process.exit(1);
                 });
             } else {
@@ -38,7 +37,6 @@ async function bootstrap() {
             }
         });
     } catch (error) {
-        console.error('Error during server startup:', error);
         process.exit(1);
     }
 }
