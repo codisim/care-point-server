@@ -11,15 +11,17 @@ import cron from 'node-cron';
 
 const app: Application = express();
 
+
+// Stripe Webhook endpoint
 app.post(
-    "/webhook",
-    express.raw({type: "application/json"}),
-    PaymentController.handleStripeWebhookEvent
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  PaymentController.handleStripeWebhookEvent
 )
 
 
+// Schedule a cron job to run every minute
 cron.schedule('* * * * *', () => {
-
   try {
     AppoinmentServices.cancelUnpaidAppoinment();
   } catch (error) {
@@ -29,10 +31,12 @@ cron.schedule('* * * * *', () => {
 });
 
 
+// CORS
 app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
+  origin: 'http://localhost:3000',
+  credentials: true
 }));
+
 
 //parser
 app.use(express.json());
@@ -40,17 +44,17 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use("/api/v1", router)
+app.use("/api/v1", router);
 
 
 
 app.get('/', (req: Request, res: Response) => {
-    res.send({
-        message: "Server is running..",
-        environment: config.node_env,
-        uptime: process.uptime().toFixed(2) + " sec",
-        timeStamp: new Date().toISOString()
-    })
+  res.send({
+    message: "Server is running..",
+    environment: config.node_env,
+    uptime: process.uptime().toFixed(2) + " sec",
+    timeStamp: new Date().toISOString()
+  })
 });
 
 

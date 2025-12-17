@@ -4,10 +4,11 @@ import config from './config';
 
 
 async function bootstrap() {
-    // This variable will hold our server instance
+
     let server: Server;
 
     try {
+
         // Start the server
         server = app.listen(config.port, () => {
             console.log(`🚀 Server is running on http://localhost:${config.port}`);
@@ -18,7 +19,7 @@ async function bootstrap() {
             if (server) {
                 server.close(() => {
                     console.log('Server closed gracefully.');
-                    process.exit(1); // Exit with a failure code
+                    process.exit(1);
                 });
             } else {
                 process.exit(1);

@@ -42,8 +42,6 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
     const userSession = req.cookies;
     const result = await AuthService.getMe(userSession)
 
-
-
     sendResponse(res, {
         statusCode: status.OK,
         success: true,

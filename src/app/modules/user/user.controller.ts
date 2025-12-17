@@ -60,6 +60,8 @@ const getAllFromDB = catchAsync(async(req: Request, res: Response) => {
         data: result.data
     })
 })
+
+
 const getMyProfile = catchAsync(async(req: Request & {user?: IJWTPayload}, res: Response) => {
 
     const user = req.user;
