@@ -4,7 +4,7 @@ import { prisma } from "../../shared/prisma";
 import bcrypt from "bcryptjs";
 
 import { Admin, Doctor, Prisma, UserRole, UserStatus } from "../../../generated/client";
-import {  userSearchableFields } from "./user.contant";
+import { userSearchableFields } from "./user.contant";
 import { paginationHelper } from "../../shared/pagination";
 import { IJWTPayload } from "../../types/common";
 
@@ -98,7 +98,7 @@ const createAdmin = async (req: Request): Promise<Admin> => {
 
 const getAllFromDB = async (params: any, options: any) => {
 
-    const { page, limit, skip, sortBy, sortOrder } = paginationHelper.pagination(options); 
+    const { page, limit, skip, sortBy, sortOrder } = paginationHelper.pagination(options);
     const { searchTerm, ...filterData } = params;
 
     const andConditions: Prisma.UserWhereInput[] = []
@@ -114,7 +114,7 @@ const getAllFromDB = async (params: any, options: any) => {
         })
     }
 
-    if(Object.keys(filterData).length > 0) {
+    if (Object.keys(filterData).length > 0) {
         andConditions.push({
             AND: Object.keys(filterData).map(key => ({
                 [key]: {
@@ -150,17 +150,17 @@ const getAllFromDB = async (params: any, options: any) => {
             limit,
             total
         },
-        data: result 
+        data: result
     }
 }
 
 
-const getMyProfile = async(user: IJWTPayload) => {
+const getMyProfile = async (user: IJWTPayload) => {
 
     const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
             email: user.email,
-                status: UserStatus.ACTIVE
+            status: UserStatus.ACTIVE
         },
         select: {
             id: true,
@@ -173,13 +173,13 @@ const getMyProfile = async(user: IJWTPayload) => {
 
     let profileData;
 
-    if(userInfo.role === UserRole.PATIENT){
+    if (userInfo.role === UserRole.PATIENT) {
         profileData = await prisma.patient.findUnique({
             where: {
                 email: userInfo.email
             }
         })
-    } else if(userInfo.role === UserRole.DOCTOR){
+    } else if (userInfo.role === UserRole.DOCTOR) {
         profileData = await prisma.doctor.findUnique({
             where: {
                 email: userInfo.email
@@ -197,23 +197,23 @@ const getMyProfile = async(user: IJWTPayload) => {
         ...userInfo,
         ...profileData
     }
-}   
+}
 
 
-const changeProfileStatus = async(id: string, payload: {status: UserStatus}) => {
+const changeProfileStatus = async (id: string, payload: { status: UserStatus }) => {
 
-         const userData = await prisma.user.findUniqueOrThrow({
-            where: {
-                id
-            }
-        })
+    const userData = await prisma.user.findUniqueOrThrow({
+        where: {
+            id
+        }
+    })
 
-        const updatedUserStatus = await prisma.user.update({
-            where: {
-                id
-            },
-            data: payload
-        })
+    const updatedUserStatus = await prisma.user.update({
+        where: {
+            id
+        },
+        data: payload
+    })
 
     return updatedUserStatus
 }
