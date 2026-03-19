@@ -7,6 +7,7 @@ import { Admin, Doctor, Prisma, UserRole, UserStatus } from "../../../generated/
 import { userSearchableFields } from "./user.contant";
 import { paginationHelper } from "../../shared/pagination";
 import { IJWTPayload } from "../../types/common";
+import { doc } from "prettier";
 
 const createPatient = async (req: Request) => {
 
@@ -48,14 +49,62 @@ const createDoctor = async (req: Request): Promise<Doctor> => {
         role: UserRole.DOCTOR
     }
 
+
+    const {specialties, ...doctorData} = req.body.doctor;
+
+
     const result = await prisma.$transaction(async (tnx) => {
+
+        // step: 1
         await tnx.user.create({
             data: userData
         })
 
-        return await tnx.doctor.create({
-            data: req.body.doctor
+
+        // step: 2
+        const createDoctorData = await tnx.doctor.create({
+            data: doctorData,
         })
+
+        // step:3 create doctor specialties if provided
+        if(specialties && Array.isArray(specialties) && specialties.length > 0){
+            const existingAllSpecialties = await tnx.specialties.findMany({
+                where: {
+                    id: {
+                        in: specialties
+                    },
+                },
+            });
+
+            const existingSpecialtiesIds = existingAllSpecialties.map(s => s.id);
+            const invalidSpecialties = specialties.filter(s => !existingSpecialtiesIds.includes(s));
+
+            if (invalidSpecialties.length > 0) {
+                throw new Error(`Invalid specialties IDs: ${invalidSpecialties.join(', ')}`);
+            }
+
+            // create doctor specialties relations
+            const doctorSpecialtiesData = specialties.map((specialtyId) => ({
+                doctorId: createDoctorData.id,
+                specialtyId,
+            }));
+
+            await tnx.doctorSpecialties.createMany({
+                data: doctorSpecialtiesData,
+            });
+        }
+
+        // step:4 returns doctor with specialties
+        const doctorWithSpecialties = await tnx.doctor.findUnique({
+            where: {
+                id: createDoctorData.id,
+            },
+            include: {
+                specialties: true,
+            },
+        });
+
+        return doctorWithSpecialties;   
 
     })
 

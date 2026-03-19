@@ -9,15 +9,15 @@ const router = express.Router()
 
 
 router.get(
-    "/me", 
-    auth(UserRole.PATIENT, UserRole.DOCTOR, UserRole.ADMIN),    
+    "/me",
+    auth(UserRole.PATIENT, UserRole.DOCTOR, UserRole.ADMIN),
     UserController.getMyProfile
 )
 
 
 router.get(
-    "/", 
-    auth(UserRole.ADMIN),    
+    "/",
+    auth(UserRole.ADMIN),
     UserController.getAllFromDB
 )
 
@@ -50,8 +50,8 @@ router.post(
 
 
 router.patch(
-    "/:id/status", 
-    auth(UserRole.ADMIN),    
+    "/:id/status",
+    auth(UserRole.ADMIN),
     UserController.changeProfileStatus
 )
 
