@@ -7,7 +7,6 @@ import { Admin, Doctor, Prisma, UserRole, UserStatus } from "../../../generated/
 import { userSearchableFields } from "./user.contant";
 import { paginationHelper } from "../../shared/pagination";
 import { IJWTPayload } from "../../types/common";
-import { doc } from "prettier";
 
 const createPatient = async (req: Request) => {
 
@@ -36,80 +35,93 @@ const createPatient = async (req: Request) => {
 
 
 const createDoctor = async (req: Request): Promise<Doctor> => {
+    const file = req.file;
 
-    if (req.file) {
-        const fileUpload = await fileUploder.uploadToCloudinary(req.file)
-        req.body.doctor.profilePhoto = fileUpload?.secure_url
+    if (file) {
+        const uploadToCloudinary = await fileUploder.uploadToCloudinary(file);
+        req.body.doctor.profilePhoto = uploadToCloudinary?.secure_url;
     }
 
-    const hashedPass = await bcrypt.hash(req.body.password, 10)
+    const hashedPassword: string = await bcrypt.hash(
+        req.body.password,
+        Number(12)
+    );
+
     const userData = {
         email: req.body.doctor.email,
-        password: hashedPass,
-        role: UserRole.DOCTOR
-    }
+        password: hashedPassword,
+        role: UserRole.DOCTOR,
+    };
 
+    // Extract specialties from doctor data
+    const { specialties, ...doctorData } = req.body.doctor;
 
-    const {specialties, ...doctorData} = req.body.doctor;
+    const result = await prisma.$transaction(async (transactionClient) => {
+        // Step 1: Create user
+        await transactionClient.user.create({
+            data: userData,
+        });
 
-
-    const result = await prisma.$transaction(async (tnx) => {
-
-        // step: 1
-        await tnx.user.create({
-            data: userData
-        })
-
-
-        // step: 2
-        const createDoctorData = await tnx.doctor.create({
+        // Step 2: Create doctor
+        const createdDoctorData = await transactionClient.doctor.create({
             data: doctorData,
-        })
+        });
 
-        // step:3 create doctor specialties if provided
-        if(specialties && Array.isArray(specialties) && specialties.length > 0){
-            const existingAllSpecialties = await tnx.specialties.findMany({
+        // Step 3: Create doctor specialties if provided
+        if (specialties && Array.isArray(specialties) && specialties.length > 0) {
+            // Verify all specialties exist
+            const existingSpecialties = await transactionClient.specialties.findMany({
                 where: {
                     id: {
-                        in: specialties
+                        in: specialties,
                     },
+                },
+                select: {
+                    id: true,
                 },
             });
 
-            const existingSpecialtiesIds = existingAllSpecialties.map(s => s.id);
-            const invalidSpecialties = specialties.filter(s => !existingSpecialtiesIds.includes(s));
+            const existingSpecialtyIds = existingSpecialties.map((s) => s.id);
+            const invalidSpecialties = specialties.filter(
+                (id) => !existingSpecialtyIds.includes(id)
+            );
 
             if (invalidSpecialties.length > 0) {
-                throw new Error(`Invalid specialties IDs: ${invalidSpecialties.join(', ')}`);
+                throw new Error(
+                    `Invalid specialty IDs: ${invalidSpecialties.join(", ")}`
+                );
             }
 
-            // create doctor specialties relations
+            // Create doctor specialties relations
             const doctorSpecialtiesData = specialties.map((specialtyId) => ({
-                doctorId: createDoctorData.id,
-                specialtyId,
+                doctorId: createdDoctorData.id,
+                specialitiesId: specialtyId,
             }));
 
-            await tnx.doctorSpecialties.createMany({
+            await transactionClient.doctorSpecialties.createMany({
                 data: doctorSpecialtiesData,
             });
         }
 
-        // step:4 returns doctor with specialties
-        const doctorWithSpecialties = await tnx.doctor.findUnique({
+        // Step 4: Return doctor with specialties
+        const doctorWithSpecialties = await transactionClient.doctor.findUnique({
             where: {
-                id: createDoctorData.id,
+                id: createdDoctorData.id,
             },
             include: {
-                specialties: true,
+                doctorSpecialties: {
+                    include: {
+                        specialities: true,
+                    },
+                },
             },
         });
 
-        return doctorWithSpecialties;   
+        return doctorWithSpecialties!;
+    });
 
-    })
-
-    return result
-}
+    return result;
+};
 
 
 const createAdmin = async (req: Request): Promise<Admin> => {
