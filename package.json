@@ -11,6 +11,7 @@
     "build": "pnpm install --force && tsc",
     "start": "node ./dist/server.js",
     "format": "prettier --write .",
+    "postinstall": "prisma generate --schema=./prisma/schema",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts"
   },
   "dependencies": {

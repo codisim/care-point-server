@@ -12,7 +12,7 @@ const getAllDoctorFromDB = catchAsync(async(req: Request, res: Response) => {
     const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]); 
     const filters = pick(req.query, doctorConstableFields);
 
-    const result = await DoctorServices.getAllDoctorFromDB(filters, options);
+    const result = await DoctorServices.getAllFromDB(filters, options);
 
         sendResponse(res, {
         statusCode: 200,
